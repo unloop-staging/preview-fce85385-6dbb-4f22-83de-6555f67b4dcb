@@ -1,0 +1,152 @@
+// ProgressRing - Circular progress indicator with value display
+
+export component ProgressRing inherits Rectangle {
+    in property <float> value: 0;
+    in property <float> max: 100;
+    in property <string> label: "";
+    in property <string> unit: "%";
+    in property <bool> show-value: true;
+    in property <color> track-color: #424242;
+    in property <color> fill-color: #3AA1F5;
+    in property <float> stroke-width: 8px;
+    
+    width: 120px;
+    height: 120px;
+    
+    property <float> progress: Math.clamp(value / max, 0, 1);
+    property <float> angle: progress * 360deg;
+    
+    // Background track
+    Path {
+        width: 100%;
+        height: 100%;
+        viewbox-width: 100;
+        viewbox-height: 100;
+        stroke: track-color;
+        stroke-width: stroke-width / 1px;
+        fill: transparent;
+        
+        MoveTo { x: 50; y: 5; }
+        ArcTo {
+            x: 50; y: 95;
+            radius-x: 45; radius-y: 45;
+            sweep: true;
+        }
+        ArcTo {
+            x: 50; y: 5;
+            radius-x: 45; radius-y: 45;
+            sweep: true;
+        }
+    }
+    
+    // Progress arc
+    Path {
+        width: 100%;
+        height: 100%;
+        viewbox-width: 100;
+        viewbox-height: 100;
+        stroke: fill-color;
+        stroke-width: stroke-width / 1px;
+        stroke-linecap: round;
+        fill: transparent;
+        
+        property <float> end-x: 50 + 45 * Math.sin(angle * 0.0174533);
+        property <float> end-y: 50 - 45 * Math.cos(angle * 0.0174533);
+        property <bool> large-arc: progress > 0.5;
+        
+        MoveTo { x: 50; y: 5; }
+        ArcTo {
+            x: end-x; y: end-y;
+            radius-x: 45; radius-y: 45;
+            sweep: true;
+            large-arc: large-arc;
+        }
+    }
+    
+    if show-value : VerticalLayout {
+        alignment: center;
+        
+        HorizontalLayout {
+            alignment: center;
+            
+            Text {
+                text: Math.round(value);
+                font-size: 24px;
+                font-weight: 600;
+                color: white;
+            }
+            
+            Text {
+                text: unit;
+                font-size: 14px;
+                color: #9E9E9E;
+                vertical-alignment: bottom;
+            }
+        }
+        
+        if label != "" : Text {
+            text: label;
+            font-size: 11px;
+            color: #9E9E9E;
+            horizontal-alignment: center;
+        }
+    }
+}
+
+export component ProgressRingMini inherits Rectangle {
+    in property <float> value: 0;
+    in property <float> max: 100;
+    in property <color> fill-color: #3AA1F5;
+    
+    width: 48px;
+    height: 48px;
+    
+    property <float> progress: Math.clamp(value / max, 0, 1);
+    property <float> angle: progress * 360deg;
+    
+    Path {
+        width: 100%;
+        height: 100%;
+        viewbox-width: 48;
+        viewbox-height: 48;
+        stroke: #424242;
+        stroke-width: 4;
+        fill: transparent;
+        
+        MoveTo { x: 24; y: 4; }
+        ArcTo { x: 24; y: 44; radius-x: 20; radius-y: 20; sweep: true; }
+        ArcTo { x: 24; y: 4; radius-x: 20; radius-y: 20; sweep: true; }
+    }
+    
+    Path {
+        width: 100%;
+        height: 100%;
+        viewbox-width: 48;
+        viewbox-height: 48;
+        stroke: fill-color;
+        stroke-width: 4;
+        stroke-linecap: round;
+        fill: transparent;
+        
+        property <float> end-x: 24 + 20 * Math.sin(angle * 0.0174533);
+        property <float> end-y: 24 - 20 * Math.cos(angle * 0.0174533);
+        
+        MoveTo { x: 24; y: 4; }
+        ArcTo {
+            x: end-x; y: end-y;
+            radius-x: 20; radius-y: 20;
+            sweep: true;
+            large-arc: progress > 0.5;
+        }
+    }
+    
+    Text {
+        text: Math.round(value);
+        font-size: 12px;
+        font-weight: 600;
+        color: white;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+}
+

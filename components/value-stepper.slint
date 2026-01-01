@@ -1,0 +1,196 @@
+// ValueStepper - Increment/decrement control with center value display
+
+import { IconButton, FilledIconButton } from "@material";
+
+export component ValueStepper inherits Rectangle {
+    in property <string> label: "";
+    in-out property <float> value: 0;
+    in property <float> min: 0;
+    in property <float> max: 100;
+    in property <float> step: 1;
+    in property <string> unit: "";
+    in property <int> decimals: 0;
+    in property <bool> wrap: false;
+    
+    callback changed(float);
+    
+    width: 200px;
+    height: label != "" ? 80px : 56px;
+    
+    VerticalLayout {
+        spacing: 4px;
+        alignment: center;
+        
+        if label != "" : Text {
+            text: label;
+            font-size: 12px;
+            color: #9E9E9E;
+            horizontal-alignment: center;
+        }
+        
+        HorizontalLayout {
+            alignment: center;
+            spacing: 16px;
+            
+            // Decrement button
+            Rectangle {
+                width: 48px;
+                height: 48px;
+                border-radius: 24px;
+                background: value <= min && !wrap ? #424242 : #3AA1F5;
+                
+                TouchArea {
+                    enabled: value > min || wrap;
+                    clicked => {
+                        if value > min {
+                            value = Math.max(min, value - step);
+                        } else if wrap {
+                            value = max;
+                        }
+                        changed(value);
+                    }
+                }
+                
+                Text {
+                    text: "−";
+                    font-size: 24px;
+                    font-weight: 600;
+                    color: value <= min && !wrap ? #757575 : white;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+            }
+            
+            // Value display
+            VerticalLayout {
+                width: 80px;
+                alignment: center;
+                
+                HorizontalLayout {
+                    alignment: center;
+                    spacing: 2px;
+                    
+                    Text {
+                        text: Math.round(value);
+                        font-size: 32px;
+                        font-weight: 600;
+                        color: white;
+                        horizontal-alignment: center;
+                    }
+                    
+                    if unit != "" : Text {
+                        text: unit;
+                        font-size: 16px;
+                        color: #9E9E9E;
+                        vertical-alignment: bottom;
+                    }
+                }
+            }
+            
+            // Increment button
+            Rectangle {
+                width: 48px;
+                height: 48px;
+                border-radius: 24px;
+                background: value >= max && !wrap ? #424242 : #3AA1F5;
+                
+                TouchArea {
+                    enabled: value < max || wrap;
+                    clicked => {
+                        if value < max {
+                            value = Math.min(max, value + step);
+                        } else if wrap {
+                            value = min;
+                        }
+                        changed(value);
+                    }
+                }
+                
+                Text {
+                    text: "+";
+                    font-size: 24px;
+                    font-weight: 600;
+                    color: value >= max && !wrap ? #757575 : white;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+}
+
+export component ValueStepperCompact inherits Rectangle {
+    in-out property <float> value: 0;
+    in property <float> min: 0;
+    in property <float> max: 100;
+    in property <float> step: 1;
+    in property <string> unit: "";
+    
+    callback changed(float);
+    
+    width: 140px;
+    height: 40px;
+    
+    HorizontalLayout {
+        alignment: center;
+        spacing: 8px;
+        
+        Rectangle {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background: #424242;
+            
+            TouchArea {
+                clicked => {
+                    if value > min {
+                        value = value - step;
+                        changed(value);
+                    }
+                }
+            }
+            
+            Text {
+                text: "−";
+                font-size: 18px;
+                color: white;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+        
+        Text {
+            width: 50px;
+            text: Math.round(value) + unit;
+            font-size: 16px;
+            font-weight: 500;
+            color: white;
+            horizontal-alignment: center;
+        }
+        
+        Rectangle {
+            width: 36px;
+            height: 36px;
+            border-radius: 18px;
+            background: #424242;
+            
+            TouchArea {
+                clicked => {
+                    if value < max {
+                        value = value + step;
+                        changed(value);
+                    }
+                }
+            }
+            
+            Text {
+                text: "+";
+                font-size: 18px;
+                color: white;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+    }
+}
+

@@ -1,0 +1,78 @@
+// StatusIndicator - Colored dot with state label
+// Used for device status, connection state, alerts
+
+export enum StatusLevel {
+    ok,
+    warning,
+    error,
+    inactive,
+    unknown
+}
+
+export component StatusIndicator inherits HorizontalLayout {
+    in property <StatusLevel> level: ok;
+    in property <string> label: "";
+    in property <bool> pulse: false;
+    in property <bool> show-label: true;
+    
+    spacing: 8px;
+    alignment: start;
+    
+    property <color> indicator-color: 
+        level == StatusLevel.ok ? #4CAF50 :
+        level == StatusLevel.warning ? #FF9800 :
+        level == StatusLevel.error ? #F44336 :
+        level == StatusLevel.inactive ? #616161 :
+        #9E9E9E;
+    
+    Rectangle {
+        width: 12px;
+        height: 12px;
+        border-radius: 6px;
+        background: indicator-color;
+        
+        Rectangle {
+            x: 2px;
+            y: 2px;
+            width: 4px;
+            height: 4px;
+            border-radius: 2px;
+            background: white.with-alpha(0.3);
+        }
+    }
+    
+    if show-label && label != "" : Text {
+        text: label;
+        font-size: 13px;
+        color: #E0E0E0;
+        vertical-alignment: center;
+    }
+}
+
+export component StatusRow inherits Rectangle {
+    in property <string> title;
+    in property <StatusLevel> status;
+    in property <string> status-label;
+    
+    height: 48px;
+    background: transparent;
+    
+    HorizontalLayout {
+        padding-left: 16px;
+        padding-right: 16px;
+        alignment: space-between;
+        
+        Text {
+            text: title;
+            font-size: 14px;
+            color: white;
+            vertical-alignment: center;
+        }
+        
+        StatusIndicator {
+            level: status;
+            label: status-label;
+        }
+    }
+}
+
